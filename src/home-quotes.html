@@ -10,6 +10,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 
 <dom-module id="home-quotes">
   <template>
@@ -20,6 +22,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 10px;
       }
     </style>
+    <iron-ajax
+      id="getQuoteAjax"
+      auto
+      url="http://localhost:3001/api/random-quote"
+      method="get"
+      handle-as="text"
+      last-response="{{quote}}"></iron-ajax>
+
 
     <div class="card">
       <div class="circle">1</div>
