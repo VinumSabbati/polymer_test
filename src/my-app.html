@@ -20,7 +20,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="my-icons.html">
+<link rel="import" href="app-data.html">
+<link rel="import" href="log-out.html">
 
 <dom-module id="my-app">
   <template>
@@ -56,7 +59,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: black;
         font-weight: bold;
       }
+
+      app-header .greeting,
+        app-header a {
+            color: #fff;
+            font-size: 13px;
+        }
+        app-header .greeting {
+            border-right: 1px solid rgba(255,255,255,.5);
+            display: inline-block;
+            padding-right: 6px;
+        }
     </style>
+
+    <iron-localstorage name="user-storage" value="{{storedUser}}"></iron-localstorage>
+    <app-data key="userData" data="{{storedUser}}"></app-data>
 
     <app-location route="{{route}}"></app-location>
     <app-route
@@ -70,8 +87,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer id="drawer">
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="home-quotes" href="/home-quotes">Home</a>
-          <a name="secret-quotes" href="/secret-quotes">Secret Quotes</a>
+            <div name="home-quotes">
+              <a href="/home-quotes">Home</a>
+            </div>
+            <div name="secret-quotes" hidden$="[[!storedUser.loggedin]]">
+              <a href="/secret-quotes">Secret Quotes</a>
+            </div>
         </iron-selector>
       </app-drawer>
 
@@ -82,7 +103,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
             <div main-title>Chuck Norris</div>
-            <a name="register-login" href="/register-login">Log In</a>
+            <a name="register-login" href="/register-login" hidden$="[[storedUser.loggedin]]">Log In</a>
+            <div hidden$="[[!storedUser.loggedin]]">
+                <span class="greeting">Hi [[storedUser.name]]!</span>
+                <log-out stored-user="{{storedUser}}" link></log-out>
+            </div>
           </app-toolbar>
         </app-header>
 
@@ -103,13 +128,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'my-app',
-
       properties: {
         page: {
           type: String,
           reflectToAttribute: true,
           observer: '_pageChanged',
         },
+        storedUser: Object
       },
 
       observers: [
